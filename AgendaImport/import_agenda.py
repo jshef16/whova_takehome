@@ -21,23 +21,15 @@ filename = args.filename
 book = xlrd.open_workbook(filename)
 sh = book.sheet_by_index(0)
 
-# Get column names and clean them of unnecessary characters
-raw_titles = sh.row(14)
-clean_titles = []
-for row in raw_titles:
-    # Cleans titles of preceding "text:" and all "\\n"
-    # Also added brackets so that white space and nonalphanumeric characters could be included
-    clean_titles.append('[' + str(row).strip("'").split("'")[1].replace('\\n', '') + ']')
-
 # Create Agenda table
-agenda = db_table("Agenda", {clean_titles[0]: "text NOT NULL", 
-                             clean_titles[1]: "text NOT NULL", 
-                             clean_titles[2]: "text NOT NULL", 
-                             clean_titles[3]: "text NOT NULL", 
-                             clean_titles[4]: "text NOT NULL", 
-                             clean_titles[5]: "text", 
-                             clean_titles[6]: "text", 
-                             clean_titles[7]: "text" })
+agenda = db_table("Agenda", {'date': "text NOT NULL", 
+                             'time_start': "text NOT NULL", 
+                             'time_end': "text NOT NULL", 
+                             'session_type': "text NOT NULL", 
+                             'title': "text NOT NULL", 
+                             'location': "text", 
+                             'description': "text", 
+                             'speaker': "text" })
 
 # Cleans cells of preceding "text:" and changes <empty> cells to be empty strings
 for row_num in range(15, sh.nrows):
@@ -47,13 +39,13 @@ for row_num in range(15, sh.nrows):
         data.append(str(cell).replace("text:", "").replace("'", "").replace("empty:", ""))
 
     # Insert row of data into Agenda table
-    agenda.insert({ clean_titles[0]: data[0], 
-                    clean_titles[1]: data[1], 
-                    clean_titles[2]: data[2], 
-                    clean_titles[3]: data[3], 
-                    clean_titles[4]: data[4], 
-                    clean_titles[5]: data[5], 
-                    clean_titles[6]: data[6], 
-                    clean_titles[7]: data[7] })
+    agenda.insert({ 'date': data[0], 
+                    'time_start': data[1], 
+                    'time_end': data[2], 
+                    'session_type': data[3], 
+                    'title': data[4], 
+                    'location': data[5], 
+                    'description': data[6], 
+                    'speaker': data[7] })
 
 
