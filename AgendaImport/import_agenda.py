@@ -22,9 +22,10 @@ book = xlrd.open_workbook(filename)
 sh = book.sheet_by_index(0)
 
 # Create Agenda table
-agenda = db_table("Agenda", {'date': "text NOT NULL", 
-                             'time_start': "text NOT NULL", 
-                             'time_end': "text NOT NULL", 
+agenda = db_table("Agenda", {'id': "number NOT NULL PRIMARY KEY",
+                             'date': "text NOT NULL", 
+                             'time_start': "time NOT NULL", 
+                             'time_end': "time NOT NULL", 
                              'session_type': "text NOT NULL", 
                              'title': "text NOT NULL", 
                              'location': "text", 
@@ -38,8 +39,9 @@ for row_num in range(15, sh.nrows):
     for cell in sh.row(row_num):
         data.append(str(cell).replace("text:", "").replace("'", "").replace("empty:", ""))
 
-    # Insert row of data into Agenda table
-    agenda.insert({ 'date': data[0], 
+    # Insert row of data into Agenda table, rownum - 15 so that id starts at 0
+    agenda.insert({ 'id': row_num - 15,
+                    'date': data[0], 
                     'time_start': data[1], 
                     'time_end': data[2], 
                     'session_type': data[3], 
@@ -47,5 +49,7 @@ for row_num in range(15, sh.nrows):
                     'location': data[5], 
                     'description': data[6], 
                     'speaker': data[7] })
+    
+agenda.close()
 
 
